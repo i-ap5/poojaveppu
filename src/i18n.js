@@ -28,7 +28,7 @@ export const STRINGS = {
           'ലോട്ടറി നമ്പർ ജ്യോത്സ്യനോട് ചോദിക്കുന്നു…',
           'ബാങ്ക് ബാലൻസ് പരിശോധിക്കുന്നു… ₹0.00 😐',
           'എല്ലാ EMI-യും വിജയദശമി വരെ മാറ്റിവെക്കുന്നു…',
-          'ധനയോഗം ലോഡ് ചെയ്യുന്നു… സാലറി ഇപ്പോഴും 1-ാം തീയതി മാത്രം.',
+          'ധനയോഗം ലോഡിംഗ്… സാലറി 1-ാം തീയതി മാത്രം.',
         ],
         [
           'നിലവിളക്ക് കൊളുത്തുന്നു…',
@@ -127,7 +127,7 @@ export const STRINGS = {
           'ஜோசியர்கிட்ட லாட்டரி நம்பர் கேக்குறோம்…',
           'பேங்க் பேலன்ஸ் செக் பண்றோம்… ₹0.00 😐',
           'எல்லா EMI-யையும் விஜயதசமிக்கு தள்ளி வைக்கிறோம்…',
-          'தன யோகம் லோடிங்… சம்பளம் இன்னும் 1-ஆம் தேதி தான்.',
+          'தன யோகம் லோடிங்… சம்பளம் 1-ஆம் தேதி தான்.',
         ],
         [
           'விளக்கு ஏற்றுகிறோம்…',
@@ -226,7 +226,7 @@ export const STRINGS = {
           'Asking the astrologer for lottery numbers…',
           'Checking bank balance… ₹0.00 😐',
           'Postponing all EMIs till Vijayadashami…',
-          'Dhana Yogam loading… salary still comes only on the 1st.',
+          'Dhana Yogam loading… salary only on the 1st.',
         ],
         [
           'Lighting the nilavilakku…',

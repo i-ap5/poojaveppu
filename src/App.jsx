@@ -89,6 +89,8 @@ export default function App() {
   async function startPooja() {
     setStep(0)
     setStage('pooja')
+    // bring the Devi into view: she's the pooja animation
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     ringBell()
     const drama = new Promise((r) => {
       const id = setTimeout(r, DRAMA_MS)
@@ -147,7 +149,7 @@ export default function App() {
       ) : (
         <main className="layout">
           <header>
-            <Saraswathi />
+            <Saraswathi playing={stage === 'pooja'} />
             <p className="chip">{t.script}</p>
             <h1>Digital Poojaveppu</h1>
             <p className="tag">{t.tag}</p>
@@ -228,14 +230,14 @@ export default function App() {
 
           {stage === 'pooja' && (
             <section className="card pooja">
-              <div className="altar" aria-hidden="true">
-                <span className="pulse" />
-                <span className="pulse" style={{ animationDelay: '0.8s' }} />
-                <span className="diya">🪔</span>
-              </div>
-              <p className="step" key={step}>
+              <p className="step" key={step} aria-live="polite">
                 {t.steps[purpose][step]}
               </p>
+              <div className="dots" aria-hidden="true">
+                {t.steps[purpose].map((_, i) => (
+                  <span key={i} className={i < step ? 'lit' : i === step ? 'lit now' : ''} />
+                ))}
+              </div>
               <div className="bar">
                 <span style={{ animationDuration: `${DRAMA_MS}ms` }} />
               </div>

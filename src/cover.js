@@ -1,15 +1,24 @@
-// Draws the cover page on a canvas (A4 ratio, ~150dpi): a temple "vazhipadu
-// receipt" lying on a banana leaf. Drawing on canvas (instead of pdf-lib
+// Draws the cover page on a canvas (~150dpi): a temple "vazhipadu receipt"
+// lying on a banana leaf. The leaf fills whatever shape the PDF's pages are;
+// the A4-sized artwork is centred on it. Drawing on canvas (instead of pdf-lib
 // text) means Malayalam and Tamil render correctly.
 import { STRINGS } from './i18n'
 
+// Malayalam uses the app's own fonts: Manjari for print, Nupuram for the banner
 const PRINT_FONTS = {
-  ml: '"Noto Sans Malayalam", sans-serif',
+  ml: '"Manjari", "Noto Sans Malayalam", sans-serif',
   ta: '"Baloo Thambi 2", sans-serif',
   en: '"Baloo Thambi 2", sans-serif',
 }
+const TITLE_FONTS = {
+  ml: '"Nupuram", "Manjari", sans-serif',
+  ta: PRINT_FONTS.ta,
+  en: PRINT_FONTS.en,
+}
 let PRINT = PRINT_FONTS.en // set per language in drawCover
-const HAND = '"Caveat", "Noto Sans Malayalam", "Baloo Thambi 2", cursive'
+let TITLE = TITLE_FONTS.en
+// Caveat has no Indic glyphs: Manjari keeps Malayalam values soft and handwritten-looking
+const HAND = '"Caveat", "Manjari", "Baloo Thambi 2", cursive'
 export const COVER_W = 1240
 export const COVER_H = 1754
 const RW = 1080
@@ -36,6 +45,9 @@ async function loadFonts(c) {
       document.fonts.load(`${w} 40px "Baloo Thambi 2"`, sample),
     ]),
     document.fonts.load('700 40px "Caveat"', 'Aa0/'),
+    document.fonts.load('400 40px "Manjari"', sample),
+    document.fonts.load('700 40px "Manjari"', sample),
+    document.fonts.load('800 40px "Nupuram"', c.title.join(' ')),
   ])
 }
 
@@ -67,40 +79,128 @@ function circle(ctx, x, y, r) {
   ctx.arc(x, y, r, 0, Math.PI * 2)
 }
 
-function bananaLeaf(ctx) {
-  const g = ctx.createLinearGradient(0, 0, COVER_W, COVER_H)
-  g.addColorStop(0, '#2f7a2a')
-  g.addColorStop(0.5, '#4f9a35')
-  g.addColorStop(1, '#2d6e25')
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, COVER_W, COVER_H)
-
+// Vazha ila: raised midrib, dense curved veins in uneven bands, mottled colour,
+// glossy sheen, yellowing edges and a couple of natural splits along the veins.
+function bananaLeaf(ctx, W, H) {
   const midX = 110
-  ctx.lineWidth = 2
-  ctx.strokeStyle = 'rgba(220,255,190,0.16)'
-  for (let y = -300; y < COVER_H + 400; y += 18) {
-    ctx.beginPath()
-    ctx.moveTo(midX, y)
-    ctx.lineTo(COVER_W, y - 260)
-    ctx.moveTo(midX, y)
-    ctx.lineTo(0, y - 30)
-    ctx.stroke()
+  const slope = 0.2 // veins rise gently away from the midrib
+  const veinEnd = (x0, y0, x1) => y0 - Math.abs(x1 - x0) * slope
+
+  // base colour, a little lighter along the middle of the blade
+  const g = ctx.createLinearGradient(0, 0, W, 0)
+  g.addColorStop(0, '#2c6b22')
+  g.addColorStop(0.25, '#3f8a2c')
+  g.addColorStop(0.6, '#4c9631')
+  g.addColorStop(1, '#346f24')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, W, H)
+
+  // mottling: soft patches of yellow-green and deep green
+  for (let i = 0; i < 18; i++) {
+    const x = Math.random() * W
+    const y = Math.random() * H
+    const r = 120 + Math.random() * 260
+    const m = ctx.createRadialGradient(x, y, 0, x, y, r)
+    const c = i % 3 === 0 ? '120,170,50' : '20,70,15'
+    m.addColorStop(0, `rgba(${c},${0.08 + Math.random() * 0.1})`)
+    m.addColorStop(1, `rgba(${c},0)`)
+    ctx.fillStyle = m
+    ctx.fillRect(x - r, y - r, r * 2, r * 2)
   }
-  ctx.lineWidth = 3
-  ctx.strokeStyle = 'rgba(0,40,0,0.14)'
-  for (let y = -291; y < COVER_H + 400; y += 90) {
+
+  // bands between veins: uneven light/dark strips
+  const step = 7
+  for (let y = -60; y < H + W * slope + 60; y += step) {
+    const shade = Math.random()
+    if (shade > 0.35 && shade < 0.75) continue
+    ctx.fillStyle = shade < 0.35 ? `rgba(10,50,5,${shade * 0.18})` : `rgba(200,240,150,${(shade - 0.75) * 0.22})`
+    const h = step * (1 + Math.floor(Math.random() * 3))
     ctx.beginPath()
     ctx.moveTo(midX, y)
-    ctx.lineTo(COVER_W, y - 260)
+    ctx.quadraticCurveTo((midX + W) / 2, veinEnd(midX, y, (midX + W) / 2) + 6, W, veinEnd(midX, y, W))
+    ctx.lineTo(W, veinEnd(midX, y + h, W))
+    ctx.quadraticCurveTo((midX + W) / 2, veinEnd(midX, y + h, (midX + W) / 2) + 6, midX, y + h)
+    ctx.fill()
+  }
+
+  // fine veins, both sides of the midrib
+  for (let y = -60; y < H + W * slope + 60; y += step) {
+    const strong = Math.random() < 0.18
+    ctx.lineWidth = strong ? 2.2 : 1
+    ctx.strokeStyle = strong ? 'rgba(10,55,5,0.22)' : `rgba(215,250,170,${0.07 + Math.random() * 0.07})`
+    ctx.beginPath()
+    ctx.moveTo(midX, y)
+    ctx.quadraticCurveTo((midX + W) / 2, veinEnd(midX, y, (midX + W) / 2) + 6, W, veinEnd(midX, y, W))
+    ctx.moveTo(midX, y)
+    ctx.lineTo(0, veinEnd(midX, y, 0))
     ctx.stroke()
   }
 
-  const rib = ctx.createLinearGradient(midX - 18, 0, midX + 18, 0)
-  rib.addColorStop(0, '#7fb24c')
-  rib.addColorStop(0.5, '#cfe8a0')
-  rib.addColorStop(1, '#7fb24c')
+  // natural splits along a vein: a thin pale gap with a dark lip
+  for (let i = 0; i < 2; i++) {
+    const y = H * (0.3 + i * 0.38) + Math.random() * 60
+    const x0 = W * (0.55 + Math.random() * 0.15)
+    ctx.save()
+    ctx.beginPath()
+    ctx.moveTo(x0, veinEnd(midX, y, x0))
+    ctx.lineTo(W, veinEnd(midX, y, W) - 3)
+    ctx.lineTo(W, veinEnd(midX, y, W) + 5)
+    ctx.closePath()
+    ctx.fillStyle = 'rgba(15,45,10,0.55)'
+    ctx.fill()
+    ctx.strokeStyle = 'rgba(190,230,140,0.5)'
+    ctx.lineWidth = 1.5
+    ctx.stroke()
+    ctx.restore()
+  }
+
+  // glossy sheen
+  const sheen = ctx.createLinearGradient(0, 0, W, H)
+  sheen.addColorStop(0, 'rgba(255,255,255,0)')
+  sheen.addColorStop(0.42, 'rgba(255,255,240,0.10)')
+  sheen.addColorStop(0.5, 'rgba(255,255,240,0.03)')
+  sheen.addColorStop(0.62, 'rgba(255,255,240,0.08)')
+  sheen.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = sheen
+  ctx.fillRect(0, 0, W, H)
+
+  // yellowing towards the outer edge
+  const edge = ctx.createLinearGradient(W - 160, 0, W, 0)
+  edge.addColorStop(0, 'rgba(170,170,40,0)')
+  edge.addColorStop(1, 'rgba(170,170,40,0.22)')
+  ctx.fillStyle = edge
+  ctx.fillRect(W - 160, 0, 160, H)
+
+  // shadow the raised midrib casts on the blade
+  const shadow = ctx.createLinearGradient(midX + 20, 0, midX + 70, 0)
+  shadow.addColorStop(0, 'rgba(0,30,0,0.28)')
+  shadow.addColorStop(1, 'rgba(0,30,0,0)')
+  ctx.fillStyle = shadow
+  ctx.fillRect(midX + 20, 0, 50, H)
+
+  // raised, rounded midrib
+  const rib = ctx.createLinearGradient(midX - 22, 0, midX + 22, 0)
+  rib.addColorStop(0, '#5f9638')
+  rib.addColorStop(0.3, '#b9d88a')
+  rib.addColorStop(0.45, '#e2f2c4')
+  rib.addColorStop(0.7, '#9cc46a')
+  rib.addColorStop(1, '#4f8530')
   ctx.fillStyle = rib
-  ctx.fillRect(midX - 18, 0, 36, COVER_H)
+  ctx.fillRect(midX - 22, 0, 44, H)
+  ctx.strokeStyle = 'rgba(40,80,20,0.35)'
+  ctx.lineWidth = 1
+  for (const dx of [-8, 6]) {
+    ctx.beginPath()
+    ctx.moveTo(midX + dx, 0)
+    ctx.lineTo(midX + dx, H)
+    ctx.stroke()
+  }
+
+  // fine grain
+  for (let i = 0; i < 2500; i++) {
+    ctx.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,220,0.05)' : 'rgba(0,30,0,0.06)'
+    ctx.fillRect(Math.random() * W, Math.random() * H, 1.5, 1.5)
+  }
 }
 
 function marigold(ctx, x, y, r) {
@@ -186,8 +286,8 @@ function banner(ctx, c) {
   ctx.stroke()
 
   const mid = COVER_W / 2
-  text(ctx, c.title[0], mid, y + 105, { size: 72, weight: 800, color: C.maroon, align: 'center', maxWidth: w - 220 })
-  text(ctx, c.title[1], mid, y + 190, { size: 64, weight: 800, color: C.maroon, align: 'center', maxWidth: w - 220 })
+  text(ctx, c.title[0], mid, y + 105, { size: 72, weight: 800, family: TITLE, color: C.maroon, align: 'center', maxWidth: w - 220 })
+  text(ctx, c.title[1], mid, y + 190, { size: 64, weight: 800, family: TITLE, color: C.maroon, align: 'center', maxWidth: w - 220 })
   marigold(ctx, x + 70, y + h / 2, 36)
   marigold(ctx, x + w - 70, y + h / 2, 36)
 }
@@ -387,7 +487,15 @@ function receipt(ctx, c, { name, fileName, pageCount, purpose }) {
     ctx.lineTo(RW - 40, y + 8)
     ctx.stroke()
     ctx.restore()
-    text(ctx, values[i], 440, y, { size: 60, weight: 700, family: HAND, color: C.pen, maxWidth: RW - 490 })
+    // Indic script sits much bigger than Caveat at the same size, so write it smaller
+    const indic = /[஀-ൿ]/.test(values[i])
+    text(ctx, values[i], 440, y, {
+      size: indic ? 46 : 60,
+      weight: 700,
+      family: HAND,
+      color: C.pen,
+      maxWidth: RW - 490,
+    })
   })
 
   // amount + signature
@@ -454,16 +562,21 @@ function offerings(ctx) {
   }
 }
 
-export async function drawCover({ name, fileName, pageCount, lang, purpose = 0 }) {
+// pageW/pageH: the PDF page shape to match (any units, only the ratio matters)
+export async function drawCover({ name, fileName, pageCount, lang, purpose = 0, pageW = COVER_W, pageH = COVER_H }) {
   const c = STRINGS[lang].cover
   PRINT = PRINT_FONTS[lang]
+  TITLE = TITLE_FONTS[lang]
   await loadFonts(c)
+  const ratio = pageW / pageH
+  const taller = ratio < COVER_W / COVER_H
   const canvas = document.createElement('canvas')
-  canvas.width = COVER_W
-  canvas.height = COVER_H
+  canvas.width = taller ? COVER_W : Math.round(COVER_H * ratio)
+  canvas.height = taller ? Math.round(COVER_W / ratio) : COVER_H
   const ctx = canvas.getContext('2d')
 
-  bananaLeaf(ctx)
+  bananaLeaf(ctx, canvas.width, canvas.height)
+  ctx.translate((canvas.width - COVER_W) / 2, (canvas.height - COVER_H) / 2)
   banner(ctx, c)
   offerings(ctx)
   receipt(ctx, c, { name, fileName, pageCount, purpose })
