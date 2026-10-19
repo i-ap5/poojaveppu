@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { poojaPdf } from './pooja'
-import { ringBell } from './bell'
+import { ringBell, stopBell } from './bell'
 import Saraswathi from './Saraswathi'
 import Privacy from './Privacy'
+import PurposePicker from './PurposePicker'
 import { DEFAULT_LANG, LANGS, STRINGS } from './i18n'
 
-const DRAMA_MS = 4900
+// matches the 14s BGM clip played at 1.1x
+const DRAMA_MS = 12700
 const LANG_KEY = 'pv-lang'
 const CHIT_NO = String(Math.floor(1000 + Math.random() * 9000))
 const TODAY = new Date().toLocaleDateString('en-IN')
@@ -15,7 +17,6 @@ function Background() {
   )
 }
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 const isPdf = (f) => f.type === 'application/pdf' || /\.pdf$/i.test(f.name)
 
 function savedLang() {
@@ -31,6 +32,7 @@ export default function App() {
   const [lang, setLang] = useState(savedLang)
   const [file, setFile] = useState(null)
   const [name, setName] = useState('')
+  const [purpose, setPurpose] = useState(0) // index into cover.purposes
   const [stage, setStage] = useState('idle') // idle | pooja | done | error
   const [step, setStep] = useState(0)
   const [result, setResult] = useState(null)
@@ -38,6 +40,7 @@ export default function App() {
   const [notPdf, setNotPdf] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [hash, setHash] = useState(() => location.hash)
+  const skipRef = useRef(() => {})
   const t = STRINGS[lang].ui
   const c = STRINGS[lang].cover
 
@@ -62,11 +65,11 @@ export default function App() {
   useEffect(() => {
     if (stage !== 'pooja') return
     const id = setInterval(
-      () => setStep((s) => Math.min(s + 1, t.steps.length - 1)),
-      DRAMA_MS / t.steps.length,
+      () => setStep((s) => Math.min(s + 1, t.steps[purpose].length - 1)),
+      DRAMA_MS / t.steps[purpose].length,
     )
     return () => clearInterval(id)
-  }, [stage, t])
+  }, [stage, t, purpose])
 
   useEffect(
     () => () => {
@@ -87,14 +90,23 @@ export default function App() {
     setStep(0)
     setStage('pooja')
     ringBell()
+    const drama = new Promise((r) => {
+      const id = setTimeout(r, DRAMA_MS)
+      skipRef.current = () => {
+        clearTimeout(id)
+        r()
+      }
+    })
     try {
-      const [res] = await Promise.all([poojaPdf(file, name.trim(), lang), wait(DRAMA_MS)])
+      const [res] = await Promise.all([poojaPdf(file, name.trim(), lang, purpose), drama])
       setResult(res)
       setStage('done')
-      ringBell()
     } catch (e) {
       setError(e.message)
       setStage('error')
+    } finally {
+      // BGM is only for the loading screen (also cuts it short on skip)
+      stopBell()
     }
   }
 
@@ -198,10 +210,7 @@ export default function App() {
               </label>
               {notPdf && <p className="hint">{t.notPdf}</p>}
 
-              <div className="row">
-                <span>{c.fields[2]}</span>
-                <span className="fill">{c.offering}</span>
-              </div>
+              <PurposePicker label={c.fields[2]} options={c.purposes} value={purpose} onChange={setPurpose} />
 
               <button className="stamp" disabled={!file} onClick={startPooja}>
                 {t.start}
@@ -225,12 +234,15 @@ export default function App() {
                 <span className="diya">🪔</span>
               </div>
               <p className="step" key={step}>
-                {t.steps[step]}
+                {t.steps[purpose][step]}
               </p>
               <div className="bar">
                 <span style={{ animationDuration: `${DRAMA_MS}ms` }} />
               </div>
               <p className="muted">{t.busy}</p>
+              <button className="link skip" onClick={() => skipRef.current()}>
+                {t.skip}
+              </button>
             </section>
           )}
 

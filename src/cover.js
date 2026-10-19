@@ -27,7 +27,7 @@ const C = {
 const STARS = ['Supply', 'Backbench', 'Arrear', 'Chathayam (sleep mode)', 'Moolam (of all problems)']
 
 async function loadFonts(c) {
-  const sample = [c.title, c.temple, c.regLine, c.payLine, c.fields, c.trolls, c.footer, c.signLabel]
+  const sample = [c.title, c.temple, c.regLine, c.payLine, c.fields, c.purposes, c.trolls, c.footer, c.signLabel]
     .flat()
     .join(' ')
   await Promise.all([
@@ -316,7 +316,7 @@ function signature(ctx, x, y) {
   ctx.stroke()
 }
 
-function receipt(ctx, c, { name, fileName, pageCount }) {
+function receipt(ctx, c, { name, fileName, pageCount, purpose }) {
   ctx.save()
   ctx.translate(COVER_W / 2, 975)
   ctx.rotate(-0.03)
@@ -370,7 +370,7 @@ function receipt(ctx, c, { name, fileName, pageCount }) {
   const values = [
     name || c.anon,
     STARS[Math.floor(Math.random() * STARS.length)],
-    c.offering,
+    c.purposes[purpose] ?? c.purposes[0],
     fileName,
     pageCount > 100 ? `${pageCount} (too much!)` : String(pageCount),
     c.banValue,
@@ -454,7 +454,7 @@ function offerings(ctx) {
   }
 }
 
-export async function drawCover({ name, fileName, pageCount, lang }) {
+export async function drawCover({ name, fileName, pageCount, lang, purpose = 0 }) {
   const c = STRINGS[lang].cover
   PRINT = PRINT_FONTS[lang]
   await loadFonts(c)
@@ -466,6 +466,6 @@ export async function drawCover({ name, fileName, pageCount, lang }) {
   bananaLeaf(ctx)
   banner(ctx, c)
   offerings(ctx)
-  receipt(ctx, c, { name, fileName, pageCount })
+  receipt(ctx, c, { name, fileName, pageCount, purpose })
   return canvas
 }

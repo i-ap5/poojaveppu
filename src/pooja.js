@@ -8,7 +8,7 @@ function toBlob(canvas, type, quality) {
 
 // Adds the pooja cover as page 1. Runs fully in the browser.
 // Throws Error('damaged' | 'locked'), which the UI translates.
-export async function poojaPdf(file, name, lang) {
+export async function poojaPdf(file, name, lang, purpose) {
   const { PDFDocument, rgb } = await import('pdf-lib')
 
   let pdf
@@ -27,7 +27,7 @@ export async function poojaPdf(file, name, lang) {
     if (size.height >= size.width) ({ width, height } = size)
   }
 
-  const canvas = await drawCover({ name, fileName: file.name, pageCount, lang })
+  const canvas = await drawCover({ name, fileName: file.name, pageCount, lang, purpose })
   const jpeg = await toBlob(canvas, 'image/jpeg', 0.9)
   const image = await pdf.embedJpg(await jpeg.arrayBuffer())
 

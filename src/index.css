@@ -351,6 +351,85 @@ h1 {
   white-space: nowrap;
 }
 
+/* purpose picker: handwritten line + paper slip of options */
+.purpose {
+  position: relative;
+}
+
+.purpose-btn {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  text-align: left;
+  font-size: 19px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.purpose-val {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.caret {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--red);
+  transition: transform 0.15s;
+}
+
+.purpose-btn.open .caret {
+  transform: rotate(180deg);
+}
+
+.purpose-list {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 82px;
+  right: 0;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fffdf5;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  box-shadow: 2px 4px 0 rgba(60, 40, 10, 0.12);
+  transform: rotate(-0.5deg);
+  animation: fade 0.15s;
+}
+
+.purpose-list button {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 1px dashed var(--line);
+  background: none;
+  text-align: left;
+  font-family: 'Caveat', 'Manjari', cursive;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--pen);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.purpose-list li:last-child button {
+  border-bottom: none;
+}
+
+.purpose-list button:hover,
+.purpose-list button.on {
+  background: #f6eed6;
+}
+
+.purpose-list button.on::after {
+  content: ' ✓';
+  color: var(--red);
+}
+
 .row input::placeholder {
   color: #b5a88c;
 }
@@ -364,6 +443,11 @@ h1 {
 .pick {
   align-items: flex-start;
   cursor: pointer;
+  /* tapping the slot shouldn't select/highlight the surrounding receipt */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 .pick > span:first-child {
@@ -540,6 +624,11 @@ button,
   text-align: center;
   font-size: 12.5px;
   color: var(--muted);
+}
+
+.skip {
+  margin-top: 8px;
+  font-size: 13px;
 }
 
 /* ---------- pooja in progress ---------- */
