@@ -1,0 +1,800 @@
+:root {
+  --bg: #ece2cb;
+  --paper: #fdf8e6;
+  --ink: #2b1a10;
+  --muted: #7a6450;
+  --line: #c9b68f;
+  --red: #b23a24;
+  --red-dark: #8f2c1a;
+  --gold: #e3a82b;
+  --sign-yellow: #ffd23f;
+  --pen: #1f3c88;
+  color-scheme: light;
+  font-family: 'Baloo Thambi 2', system-ui, sans-serif;
+  color: var(--ink);
+}
+
+/* Malayalam needs a font with full conjunct support */
+:root:lang(ml) {
+  font-family: 'Noto Sans Malayalam', 'Baloo Thambi 2', system-ui, sans-serif;
+}
+
+/* English: Archivo throughout, including the titles that use Malayalam display fonts */
+:root:lang(en),
+:lang(en) .chip,
+:lang(en) .receipt-title {
+  font-family: 'Archivo', system-ui, sans-serif;
+}
+
+:lang(en) .receipt-title {
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+.page {
+  position: relative;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 16px 16px 28px;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--bg);
+}
+
+/* ---------- Saraswathi illustration ---------- */
+.devi {
+  position: relative;
+  width: min(280px, 78vw);
+  margin: 0 auto;
+}
+
+.devi-aura {
+  position: absolute;
+  inset: 0 6% 28%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 196, 80, 0.55) 0%, rgba(255, 196, 80, 0) 68%);
+  animation: glow-pulse 2.6s ease-in-out infinite alternate;
+}
+
+.devi-art {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.devi-note {
+  position: absolute;
+  top: 14%;
+  font-size: 18px;
+  color: var(--red);
+  opacity: 0;
+  animation: note 4.8s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .devi-aura,
+  .devi-note {
+    animation: none;
+  }
+}
+
+/* ---------- language switch: plain text links ---------- */
+.langs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+}
+
+.langs button {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.langs button + button::before {
+  content: '·';
+  /* inline-block keeps the active underline off the separator */
+  display: inline-block;
+  margin-right: 14px;
+  color: var(--line);
+}
+
+.langs button:hover,
+.langs button.on {
+  color: var(--ink);
+}
+
+.langs button.on {
+  text-decoration: underline 2px var(--red);
+  text-underline-offset: 5px;
+}
+
+/* ---------- header: hand-painted signboard ---------- */
+header {
+  text-align: center;
+  padding: 8px 0 22px;
+}
+
+.chip {
+  margin: 2px 0 8px;
+  font-family: 'Anek Malayalam', 'Manjari', 'Noto Sans Malayalam', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--red);
+}
+
+/* Receipt heading in Nupuram (SMC, OFL), Manjari for the rest of the Malayalam */
+@font-face {
+  font-family: 'Nupuram';
+  src: url('/fonts/Nupuram-VF.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+.receipt-title {
+  margin: 0;
+  font-family: 'Nupuram', 'Manjari', 'Baloo Thambi 2', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--red);
+}
+
+:lang(ml) .card,
+:lang(ml) .stamp,
+:lang(ml) .done h2 {
+  font-family: 'Manjari', 'Noto Sans Malayalam', sans-serif;
+}
+
+/* handwritten entries: Caveat for Latin, Manjari for any Malayalam typed in */
+:lang(ml) .row input,
+:lang(ml) .fill {
+  font-family: 'Caveat', 'Manjari', cursive;
+}
+
+
+h1 {
+  display: inline-block;
+  margin: 0;
+  padding: 8px 16px 6px;
+  font-family: 'Bungee', 'Baloo Thambi 2', sans-serif;
+  font-size: clamp(19px, 6vw, 28px);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--sign-yellow);
+  background: var(--red);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: rotate(-1.5deg);
+}
+
+.tag {
+  margin: 14px auto 0;
+  max-width: 330px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* tagline under the signboard */
+:lang(ml) .tag {
+  font-family: 'Anek Malayalam', 'Noto Sans Malayalam', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* ---------- card: a page torn from a receipt book ---------- */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 20px 34px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px rgba(60, 40, 10, 0.07);
+  transform: rotate(-0.6deg);
+  animation: rise-in 0.4s ease-out;
+  /* torn top and bottom edges: solid paper in the middle, uneven teeth at each end */
+  --tear-up: conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0);
+  --tear-down: conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0);
+  -webkit-mask:
+    linear-gradient(#000 0 0) 0 9px / 100% calc(100% - 18px) no-repeat,
+    var(--tear-up) 0 2px / 14px 7px repeat-x,
+    var(--tear-up) 9px 0 / 22px 9px repeat-x,
+    var(--tear-down) 0 calc(100% - 2px) / 14px 7px repeat-x,
+    var(--tear-down) 5px 100% / 22px 9px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) 0 9px / 100% calc(100% - 18px) no-repeat,
+    var(--tear-up) 0 2px / 14px 7px repeat-x,
+    var(--tear-up) 9px 0 / 22px 9px repeat-x,
+    var(--tear-down) 0 calc(100% - 2px) / 14px 7px repeat-x,
+    var(--tear-down) 5px 100% / 22px 9px repeat-x;
+}
+
+/* the torn edge masks away outlines, so drag-over tints the paper instead */
+.chit.over {
+  background: #fbefd3;
+}
+
+/* end of the slip: note on the left, signature on the right */
+.chit-end {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding-top: 12px;
+  border-top: 1.5px dashed var(--line);
+}
+
+.chit-end .privacy {
+  flex: 1;
+  padding-top: 0;
+  border-top: none;
+  text-align: left;
+}
+
+.sign {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.sign span {
+  display: block;
+  padding: 0 12px 2px;
+  font-family: 'Caveat', cursive;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--pen);
+  border-bottom: 1px solid var(--line);
+  transform: rotate(-6deg);
+}
+
+.sign small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+/* small print at the very end of the slip */
+.disclaimer {
+  margin: -4px 0 0;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--muted);
+}
+
+.chit-head {
+  text-align: center;
+  padding-bottom: 12px;
+  border-bottom: 1.5px dashed var(--line);
+  color: var(--red);
+}
+
+.trust {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.chit-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.chit-meta span {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.row > span:first-child {
+  min-width: 72px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--red);
+  white-space: nowrap;
+}
+
+.row input,
+.fill {
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px 1px;
+  border: none;
+  border-bottom: 1.5px dotted var(--line);
+  border-radius: 0;
+  background: transparent;
+  font-family: 'Caveat', cursive;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--pen);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row input::placeholder {
+  color: #b5a88c;
+}
+
+.row input:focus {
+  outline: none;
+  border-bottom-color: var(--pen);
+}
+
+/* book line: one tappable attach slot */
+.pick {
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.pick > span:first-child {
+  padding-top: 14px;
+}
+
+/* a small paper tag clipped onto the receipt */
+.slot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  padding: 12px 12px 10px 14px;
+  margin-top: 6px;
+  color: var(--pen);
+  background: #fffdf5;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  box-shadow: 1px 2px 0 rgba(60, 40, 10, 0.08);
+  transform: rotate(-1deg);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.pick:hover .slot,
+.chit.over .slot {
+  transform: rotate(-1deg) translate(-1px, -2px);
+  box-shadow: 2px 4px 0 rgba(60, 40, 10, 0.1);
+}
+
+.pick:focus-within .slot {
+  outline: 2px solid var(--pen);
+  outline-offset: 3px;
+}
+
+/* paperclip hanging over the tag's top edge */
+.clip {
+  position: absolute;
+  top: -12px;
+  right: 14px;
+  width: 22px;
+  height: 30px;
+  fill: none;
+  stroke: #8a8f99;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(8deg);
+}
+
+.slot-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.slot-text strong {
+  font-size: 15px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slot-text small {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+/* once a file is attached the name is "written in" by hand */
+.slot.picked {
+  border-left-color: var(--pen);
+}
+
+.slot.picked strong {
+  font-family: 'Caveat', 'Manjari', cursive;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--red);
+  text-align: center;
+}
+
+/* ---------- buttons ---------- */
+button,
+.secondary {
+  font: inherit;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* rubber stamp */
+.stamp {
+  align-self: center;
+  margin-top: 6px;
+  padding: 8px 24px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--red);
+  background: transparent;
+  border: 4px double var(--red);
+  border-radius: 6px;
+  transform: rotate(-3deg);
+  transition: background 0.15s, transform 0.1s, opacity 0.2s;
+}
+
+.stamp:hover:not(:disabled) {
+  background: rgba(178, 58, 36, 0.07);
+}
+
+.stamp:active:not(:disabled) {
+  transform: rotate(-3deg) scale(0.94);
+}
+
+.stamp:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.primary {
+  font-size: 17px;
+  font-weight: 700;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  color: var(--paper);
+  background: var(--red);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.secondary {
+  font-weight: 600;
+  padding: 11px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.secondary:hover {
+  background: #f6eed6;
+}
+
+.link {
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.privacy {
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1.5px dashed var(--line);
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ---------- pooja in progress ---------- */
+.pooja {
+  align-items: center;
+  text-align: center;
+  padding: 32px 18px;
+}
+
+.altar {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: grid;
+  place-items: center;
+}
+
+.pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  animation: pulse 1.6s ease-out infinite;
+}
+
+.diya {
+  font-size: 52px;
+  line-height: 1;
+}
+
+.step {
+  margin: 0;
+  font-family: 'Caveat', cursive;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--pen);
+  min-height: 2.6em;
+  animation: fade 0.4s;
+}
+
+.bar {
+  width: 100%;
+  height: 8px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--red);
+  animation: fill linear forwards;
+}
+
+/* ---------- result ---------- */
+.done {
+  text-align: center;
+}
+
+.done h2 {
+  align-self: center;
+  margin: 4px 0;
+  padding: 4px 18px;
+  font-size: 24px;
+  color: var(--red);
+  border: 4px double var(--red);
+  border-radius: 6px;
+  transform: rotate(-4deg);
+  animation: stamp-in 0.35s ease-out;
+}
+
+.done p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.preview {
+  width: 68%;
+  margin: 6px auto;
+  border: 1px solid var(--line);
+  box-shadow: 4px 5px 0 rgba(60, 40, 10, 0.12);
+}
+
+footer {
+  text-align: center;
+  margin-top: 26px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+:lang(ml) footer {
+  font-family: 'Anek Malayalam', 'Noto Sans Malayalam', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+footer a {
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+/* ---------- privacy policy page ---------- */
+.policy {
+  display: block;
+  max-width: 680px;
+  margin: 24px auto 0;
+  padding: 30px 26px 40px;
+  /* the policy text is English in every language */
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  transform: none;
+}
+
+.policy h2 {
+  margin: 10px 0 2px;
+  font-size: 26px;
+  color: var(--red);
+}
+
+.policy h3 {
+  margin: 22px 0 6px;
+  font-size: 16px;
+  color: var(--red);
+}
+
+.policy p,
+.policy ul {
+  margin: 0 0 8px;
+}
+
+.policy ul {
+  padding-left: 20px;
+}
+
+.policy li {
+  margin-bottom: 4px;
+}
+
+.policy a {
+  color: var(--pen);
+}
+
+.policy .updated {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.policy .back {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ---------- desktop: illustration left, chit right ---------- */
+@media (min-width: 860px) {
+  .page {
+    max-width: 980px;
+    padding: 24px 32px 28px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    align-items: center;
+    gap: 56px;
+    min-height: calc(100vh - 130px);
+  }
+
+  header {
+    padding: 0;
+  }
+
+  .devi {
+    width: 340px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .langs {
+    justify-content: flex-end;
+  }
+}
+
+/* ---------- keyframes ---------- */
+@keyframes pulse {
+  from {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) rotate(-0.6deg);
+  }
+}
+
+@keyframes stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.8) rotate(-4deg);
+  }
+}
+
+@keyframes glow-pulse {
+  from {
+    opacity: 0.75;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes note {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(24px, -70px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+  }
+}
