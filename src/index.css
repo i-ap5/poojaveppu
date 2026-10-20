@@ -190,7 +190,7 @@ header {
   color: var(--red);
 }
 
-:lang(ml) .card,
+:lang(ml) .card:not(.policy),
 :lang(ml) .stamp,
 :lang(ml) .done h2 {
   font-family: 'Manjari', 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;

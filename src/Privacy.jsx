@@ -97,7 +97,7 @@ function ContactForm() {
 
 export default function Privacy({ back, onBack }) {
   return (
-    <article className="card policy">
+    <article className="card policy" lang="en">
       <a className="back" href="/" onClick={onBack}>
         {back}
       </a>
