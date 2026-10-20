@@ -57,6 +57,28 @@ async function loadFonts(c) {
     document.fonts.load('700 40px "Manjari"', sample),
     document.fonts.load('800 40px "Nupuram"', c.title.join(' ')),
   ])
+  await document.fonts.ready
+  await settleFonts(sample)
+}
+
+// iPhone Safari can report fonts as loaded while canvas still measures text with them as
+// zero width: centred lines then start at the middle and overflow. Wait (up to ~3s) until
+// every font the cover uses measures the sample text non-zero and the same twice in a row.
+async function settleFonts(sample) {
+  const ctx = document.createElement('canvas').getContext('2d')
+  const fonts = [`600 40px ${PRINT}`, `800 40px ${PRINT}`, `800 40px ${TITLE}`, `700 40px ${HAND}`]
+  const measure = () =>
+    fonts.map((f) => {
+      ctx.font = f
+      return ctx.measureText(sample).width
+    })
+  let prev = measure()
+  for (let i = 0; i < 30; i++) {
+    await new Promise((r) => setTimeout(r, 100))
+    const now = measure()
+    if (now.every((w, j) => w > 0 && w === prev[j])) return
+    prev = now
+  }
 }
 
 function setFont(ctx, size, weight, family) {
