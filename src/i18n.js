@@ -28,7 +28,7 @@ export const STRINGS = {
           'ലോട്ടറി നമ്പർ ജ്യോത്സ്യനോട് ചോദിക്കുന്നു…',
           'ബാങ്ക് ബാലൻസ് പരിശോധിക്കുന്നു… ₹0.00 😐',
           'എല്ലാ EMI-യും വിജയദശമി വരെ മാറ്റിവെക്കുന്നു…',
-          'ധനയോഗം ലോഡിംഗ്… സാലറി 1-ാം തീയതി മാത്രം.',
+          'ധനയോഗം ലോഡിംഗ്… സാലറി ഒന്നാം തീയതി മാത്രം.',
         ],
         [
           'നിലവിളക്ക് കൊളുത്തുന്നു…',
@@ -75,7 +75,9 @@ export const STRINGS = {
       footer: 'ചന്ദനവും കുങ്കുമവും കുറച്ച് മടിയും ചേർത്ത് ഉണ്ടാക്കിയത്',
       fileSuffix: '_POOJAKKU_VACHU',
       disclaimer: 'വെറും തമാശയ്ക്ക് • ഇതൊരു യഥാർത്ഥ ക്ഷേത്ര രസീതല്ല',
-      privacyLink: 'സ്വകാര്യതാ നയം',
+      privacyLink: 'സ്വകാര്യതാ നയം & നിബന്ധനകൾ',
+      satire:
+        'ഇതൊരു ഹാസ്യ പാരഡി മാത്രമാണ്. ഒരു വിശ്വാസത്തെയും ആചാരത്തെയും വ്രണപ്പെടുത്താൻ ഉദ്ദേശിച്ചിട്ടില്ല. ദയവായി തമാശയായി മാത്രം കാണുക 🙏',
       back: '← തിരികെ',
     },
     cover: {
@@ -174,7 +176,9 @@ export const STRINGS = {
       footer: 'சந்தனம், குங்குமம், கொஞ்சம் சோம்பல் சேர்த்து செய்தது',
       fileSuffix: '_POOJA_VECHACHU',
       disclaimer: 'சும்மா ஜாலிக்கு • இது உண்மையான கோவில் ரசீது அல்ல',
-      privacyLink: 'தனியுரிமைக் கொள்கை',
+      privacyLink: 'தனியுரிமை & விதிமுறைகள்',
+      satire:
+        'இது வெறும் நகைச்சுவை பகடி மட்டுமே. எந்த நம்பிக்கையையும் சடங்கையும் புண்படுத்தும் நோக்கம் இல்லை. தயவுசெய்து ஜாலியாக மட்டும் எடுத்துக்கொள்ளுங்கள் 🙏',
       back: '← திரும்ப',
     },
     cover: {
@@ -273,7 +277,9 @@ export const STRINGS = {
       footer: 'Made with chandanam, kumkumam and a little procrastination',
       fileSuffix: '_UNDER_POOJA',
       disclaimer: 'Just for fun • not a real temple receipt',
-      privacyLink: 'Privacy & disclaimer',
+      privacyLink: 'Privacy, terms & disclaimer',
+      satire:
+        'This is a light-hearted parody. No offence is meant to any faith, ritual or person. Please take it as a joke 🙏',
       back: '← Back',
     },
     cover: {

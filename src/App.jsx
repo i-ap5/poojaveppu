@@ -9,6 +9,11 @@ import { DEFAULT_LANG, LANGS, STRINGS } from './i18n'
 // matches the 14s BGM clip played at 1.1x
 const DRAMA_MS = 12700
 const LANG_KEY = 'pv-lang'
+const SITE_URL = 'https://poojaveppu.pages.dev/'
+const HOME_TITLE = document.title
+const PRIVACY_TITLE = 'Privacy, Terms & Disclaimer | Digital Poojaveppu'
+// /privacy is the real page; #privacy is kept so older shared links still work
+const isPrivacyRoute = () => location.pathname.replace(/\/$/, '') === '/privacy' || location.hash === '#privacy'
 const CHIT_NO = String(Math.floor(1000 + Math.random() * 9000))
 const TODAY = new Date().toLocaleDateString('en-IN')
 function Background() {
@@ -39,19 +44,36 @@ export default function App() {
   const [error, setError] = useState('')
   const [notPdf, setNotPdf] = useState(false)
   const [dragging, setDragging] = useState(false)
-  const [hash, setHash] = useState(() => location.hash)
+  const [privacy, setPrivacy] = useState(isPrivacyRoute)
   const skipRef = useRef(() => {})
   const t = STRINGS[lang].ui
   const c = STRINGS[lang].cover
 
   useEffect(() => {
-    const onHash = () => {
-      setHash(location.hash)
+    const onRoute = () => {
+      setPrivacy(isPrivacyRoute())
       window.scrollTo(0, 0)
     }
-    window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
+    window.addEventListener('popstate', onRoute)
+    window.addEventListener('hashchange', onRoute)
+    return () => {
+      window.removeEventListener('popstate', onRoute)
+      window.removeEventListener('hashchange', onRoute)
+    }
   }, [])
+
+  // per-page title and canonical, so search engines index /privacy as its own page
+  useEffect(() => {
+    document.title = privacy ? PRIVACY_TITLE : HOME_TITLE
+    document.querySelector('link[rel=canonical]')?.setAttribute('href', privacy ? `${SITE_URL}privacy` : SITE_URL)
+  }, [privacy])
+
+  function navigate(e, path) {
+    e.preventDefault()
+    history.pushState(null, '', path)
+    setPrivacy(isPrivacyRoute())
+    window.scrollTo(0, 0)
+  }
 
   useEffect(() => {
     document.documentElement.lang = lang
@@ -115,7 +137,7 @@ export default function App() {
   function download() {
     const a = document.createElement('a')
     a.href = result.url
-    a.download = `${result.baseName}${t.fileSuffix}.pdf`
+    a.download = result.fileName
     a.click()
   }
 
@@ -126,7 +148,19 @@ export default function App() {
     setStage('idle')
   }
 
-  const share = `https://wa.me/?text=${encodeURIComponent(`${t.shareText} ${location.href}`)}`
+  const shareText = `${t.shareText} ${SITE_URL}`
+  const share = `https://wa.me/?text=${encodeURIComponent(shareText)}`
+
+  // Phones: share the PDF file itself via the share sheet (a blob: link is useless to anyone else).
+  // Where file sharing isn't supported, the link falls through to the WhatsApp text message.
+  function sharePdf(e) {
+    const pdf = new File([result.blob], result.fileName, { type: 'application/pdf' })
+    if (!navigator.canShare?.({ files: [pdf] })) return
+    e.preventDefault()
+    navigator.share({ files: [pdf], text: shareText }).catch(() => {
+      // cancelled by the user
+    })
+  }
 
   return (
     <div className="page">
@@ -135,6 +169,7 @@ export default function App() {
         {LANGS.map((l) => (
           <button
             key={l.id}
+            lang={l.id}
             className={l.id === lang ? 'on' : ''}
             aria-pressed={l.id === lang}
             onClick={() => setLang(l.id)}
@@ -144,8 +179,8 @@ export default function App() {
         ))}
       </div>
 
-      {hash === '#privacy' ? (
-        <Privacy back={t.back} />
+      {privacy ? (
+        <Privacy back={t.back} onBack={(e) => navigate(e, '/')} />
       ) : (
         <main className="layout">
           <header>
@@ -257,7 +292,7 @@ export default function App() {
               <button className="primary" onClick={download}>
                 {t.download}
               </button>
-              <a className="secondary" href={share} target="_blank" rel="noreferrer">
+              <a className="secondary" href={share} target="_blank" rel="noreferrer" onClick={sharePdf}>
                 {t.share}
               </a>
               <button className="link" onClick={reset}>
@@ -279,7 +314,10 @@ export default function App() {
       )}
 
       <footer>
-        {t.footer} · <a href="#privacy">{t.privacyLink}</a>
+        <p className="satire">{t.satire}</p>
+        {t.footer} · <a href="/privacy" onClick={(e) => navigate(e, '/privacy')}>
+          {t.privacyLink}
+        </a>
       </footer>
     </div>
   )

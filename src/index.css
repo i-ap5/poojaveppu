@@ -10,7 +10,7 @@
   --sign-yellow: #ffd23f;
   --pen: #1f3c88;
   color-scheme: light;
-  font-family: 'Baloo Thambi 2', system-ui, sans-serif;
+  font-family: 'Baloo Thambi 2', 'Noto Sans Malayalam', system-ui, sans-serif;
   color: var(--ink);
 }
 
@@ -23,7 +23,7 @@
 :root:lang(en),
 :lang(en) .chip,
 :lang(en) .receipt-title {
-  font-family: 'Archivo', system-ui, sans-serif;
+  font-family: 'Archivo', 'Noto Sans Malayalam', 'Baloo Thambi 2', system-ui, sans-serif;
 }
 
 :lang(en) .receipt-title {
@@ -88,6 +88,11 @@ body {
   animation: note 4.8s ease-out infinite;
 }
 
+.devi-note svg {
+  display: block;
+  fill: currentColor;
+}
+
 /* during the pooja the Devi plays on: brighter aura, more and faster notes */
 .devi.playing .devi-aura {
   inset: -4% 0 22%;
@@ -125,6 +130,16 @@ body {
   cursor: pointer;
 }
 
+/* each label in its own script's web font: in English mode the page fonts have no
+   Malayalam/Tamil glyphs, and devices without system Indic fonts showed boxes */
+.langs button:lang(ml) {
+  font-family: 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
+}
+
+.langs button:lang(ta) {
+  font-family: 'Baloo Thambi 2', 'Noto Sans Malayalam', sans-serif;
+}
+
 .langs button + button::before {
   content: '·';
   /* inline-block keeps the active underline off the separator */
@@ -151,7 +166,7 @@ header {
 
 .chip {
   margin: 2px 0 8px;
-  font-family: 'Anek Malayalam', 'Manjari', 'Noto Sans Malayalam', sans-serif;
+  font-family: 'Anek Malayalam', 'Manjari', 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
   font-size: 30px;
   font-weight: 800;
   line-height: 1.2;
@@ -168,7 +183,7 @@ header {
 
 .receipt-title {
   margin: 0;
-  font-family: 'Nupuram', 'Manjari', 'Baloo Thambi 2', sans-serif;
+  font-family: 'Nupuram', 'Manjari', 'Baloo Thambi 2', 'Noto Sans Malayalam', sans-serif;
   font-size: 30px;
   font-weight: 800;
   line-height: 1.25;
@@ -178,13 +193,13 @@ header {
 :lang(ml) .card,
 :lang(ml) .stamp,
 :lang(ml) .done h2 {
-  font-family: 'Manjari', 'Noto Sans Malayalam', sans-serif;
+  font-family: 'Manjari', 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
 }
 
 /* handwritten entries: Caveat for Latin, Manjari for any Malayalam typed in */
 :lang(ml) .row input,
 :lang(ml) .fill {
-  font-family: 'Caveat', 'Manjari', cursive;
+  font-family: 'Caveat', 'Manjari', 'Noto Sans Malayalam', 'Baloo Thambi 2', cursive;
 }
 
 
@@ -192,7 +207,7 @@ h1 {
   display: inline-block;
   margin: 0;
   padding: 8px 16px 6px;
-  font-family: 'Bungee', 'Baloo Thambi 2', sans-serif;
+  font-family: 'Bungee', 'Baloo Thambi 2', 'Noto Sans Malayalam', sans-serif;
   font-size: clamp(19px, 6vw, 28px);
   font-weight: 400;
   line-height: 1.1;
@@ -212,7 +227,7 @@ h1 {
 
 /* tagline under the signboard */
 :lang(ml) .tag {
-  font-family: 'Anek Malayalam', 'Noto Sans Malayalam', sans-serif;
+  font-family: 'Anek Malayalam', 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
   font-size: 17px;
   font-weight: 500;
   line-height: 1.45;
@@ -276,7 +291,7 @@ h1 {
 .sign span {
   display: block;
   padding: 0 12px 2px;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Noto Sans Malayalam', 'Baloo Thambi 2', cursive;
   font-size: 26px;
   font-weight: 700;
   line-height: 1;
@@ -325,7 +340,7 @@ h1 {
 }
 
 .chit-meta span {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: ui-monospace, 'SF Mono', Menlo, 'Noto Sans Malayalam', 'Baloo Thambi 2', monospace;
   font-size: 12px;
 }
 
@@ -352,7 +367,7 @@ h1 {
   border-bottom: 1.5px dotted var(--line);
   border-radius: 0;
   background: transparent;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Noto Sans Malayalam', 'Baloo Thambi 2', cursive;
   font-size: 24px;
   font-weight: 700;
   line-height: 1.2;
@@ -385,7 +400,7 @@ h1 {
 }
 
 .caret {
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
   font-size: 13px;
   color: var(--red);
   transition: transform 0.15s;
@@ -419,7 +434,7 @@ h1 {
   border-bottom: 1px dashed var(--line);
   background: none;
   text-align: left;
-  font-family: 'Caveat', 'Manjari', cursive;
+  font-family: 'Caveat', 'Manjari', 'Noto Sans Malayalam', 'Baloo Thambi 2', cursive;
   font-size: 19px;
   font-weight: 700;
   color: var(--pen);
@@ -534,7 +549,7 @@ h1 {
 }
 
 .slot.picked strong {
-  font-family: 'Caveat', 'Manjari', cursive;
+  font-family: 'Caveat', 'Manjari', 'Noto Sans Malayalam', 'Baloo Thambi 2', cursive;
   font-size: 22px;
   line-height: 1.15;
 }
@@ -652,7 +667,7 @@ button,
 .step {
   margin: 0;
   max-width: 320px;
-  font-family: 'Caveat', 'Manjari', 'Baloo Thambi 2', cursive;
+  font-family: 'Caveat', 'Manjari', 'Baloo Thambi 2', 'Noto Sans Malayalam', cursive;
   font-size: 26px;
   font-weight: 700;
   line-height: 1.3;
@@ -665,13 +680,13 @@ button,
 
 /* Caveat has no Malayalam/Tamil glyphs, so use proper fonts there */
 :lang(ml) .step {
-  font-family: 'Manjari', 'Noto Sans Malayalam', sans-serif;
+  font-family: 'Manjari', 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
   font-size: 21px;
   line-height: 1.45;
 }
 
 :lang(ta) .step {
-  font-family: 'Baloo Thambi 2', system-ui, sans-serif;
+  font-family: 'Baloo Thambi 2', 'Noto Sans Malayalam', system-ui, sans-serif;
   font-size: 19px;
   font-weight: 600;
   line-height: 1.45;
@@ -769,7 +784,7 @@ footer {
 }
 
 :lang(ml) footer {
-  font-family: 'Anek Malayalam', 'Noto Sans Malayalam', sans-serif;
+  font-family: 'Anek Malayalam', 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
   font-size: 13px;
   font-weight: 500;
 }
@@ -779,6 +794,15 @@ footer a {
   text-underline-offset: 3px;
 }
 
+footer .satire {
+  margin: 0 auto 10px;
+  max-width: 360px;
+  padding: 8px 12px;
+  line-height: 1.45;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+}
+
 /* ---------- privacy policy page ---------- */
 .policy {
   display: block;
@@ -786,7 +810,7 @@ footer a {
   margin: 24px auto 0;
   padding: 30px 26px 40px;
   /* the policy text is English in every language */
-  font-family: 'Archivo', system-ui, sans-serif;
+  font-family: 'Archivo', 'Noto Sans Malayalam', 'Baloo Thambi 2', system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.6;
   transform: none;
@@ -822,7 +846,7 @@ footer a {
 }
 
 .policy .updated {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: ui-monospace, 'SF Mono', Menlo, 'Noto Sans Malayalam', 'Baloo Thambi 2', monospace;
   font-size: 12px;
   color: var(--muted);
 }
@@ -830,6 +854,125 @@ footer a {
 .policy .back {
   font-weight: 700;
   text-decoration: none;
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.contact label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.contact label span {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.contact input,
+.contact textarea {
+  font: inherit;
+  font-weight: 400;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+}
+
+.contact input:focus,
+.contact textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.contact textarea {
+  resize: vertical;
+}
+
+.contact .trap {
+  display: none;
+}
+
+.contact .primary:disabled {
+  opacity: 0.6;
+}
+
+.form-note {
+  font-weight: 600;
+}
+
+.form-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 22px 16px 14px;
+  text-align: center;
+  font-weight: 600;
+  border: 1.5px dashed var(--line);
+  border-radius: 4px;
+}
+
+.form-done p {
+  margin: 0;
+}
+
+/* rubber stamp, thumped down like the pooja seal */
+.form-done .recv {
+  padding: 6px 20px;
+  font-family: 'Bungee', 'Noto Sans Malayalam', 'Baloo Thambi 2', sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  color: var(--red);
+  border: 4px double var(--red);
+  border-radius: 6px;
+  transform: rotate(-4deg);
+  animation: thump 0.35s ease-out;
+}
+
+@keyframes thump {
+  from {
+    opacity: 0;
+    transform: rotate(-4deg) scale(1.8);
+  }
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 50;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 12px 18px;
+  font-weight: 700;
+  color: var(--sign-yellow);
+  background: var(--red);
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: translateX(-50%);
+  animation: toast-in 0.25s ease-out;
+}
+
+.toast.error {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
 }
 
 /* ---------- desktop: illustration left, chit right ---------- */

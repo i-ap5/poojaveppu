@@ -1,6 +1,22 @@
 import { drawCover } from './cover'
+import { STRINGS } from './i18n'
 
 const A4 = [595.28, 841.89]
+
+// Strip any earlier pooja suffix (in any language) so a re-pooja'd file doesn't get two
+const SUFFIXES = Object.values(STRINGS).map((s) => s.ui.fileSuffix)
+function outName(fileName, lang) {
+  let base = fileName.replace(/\.pdf$/i, '')
+  for (let again = true; again; ) {
+    again = false
+    for (const s of SUFFIXES)
+      if (base.toUpperCase().endsWith(s)) {
+        base = base.slice(0, -s.length)
+        again = true
+      }
+  }
+  return `${base}${STRINGS[lang].ui.fileSuffix}.pdf`
+}
 
 function toBlob(canvas, type, quality) {
   return new Promise((resolve) => canvas.toBlob(resolve, type, quality))
@@ -37,10 +53,13 @@ export async function poojaPdf(file, name, lang, purpose) {
   page.drawImage(image, { x: 0, y: 0, width, height })
 
   const bytes = await pdf.save()
+  const blob = new Blob([bytes], { type: 'application/pdf' })
   return {
-    url: URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' })),
+    blob,
+    url: URL.createObjectURL(blob),
     previewUrl: URL.createObjectURL(jpeg),
-    baseName: file.name.replace(/\.pdf$/i, ''),
+    // fixed to the cover's language, even if the language is switched before downloading
+    fileName: outName(file.name, lang),
     pageCount,
   }
 }

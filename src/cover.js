@@ -33,7 +33,15 @@ const C = {
   sandal: '#e9c98b',
 }
 
-const STARS = ['Supply', 'Backbench', 'Arrear', 'Chathayam (sleep mode)', 'Moolam (of all problems)']
+// real nakshatra names with a pun, so the "star" field reads like a proper receipt entry
+const STARS = [
+  'Chathayam (sleep mode)',
+  'Moolam (of all problems)',
+  'Uthradam (last-minute rush)',
+  'Thiruvathira (night owl)',
+  'Karthika (midnight oil)',
+  'Revathi (revision pending)',
+]
 
 async function loadFonts(c) {
   const sample = [c.title, c.temple, c.regLine, c.payLine, c.fields, c.purposes, c.trolls, c.footer, c.signLabel]

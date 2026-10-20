@@ -1,17 +1,107 @@
-// Privacy policy and disclaimer, shown at #privacy.
+// Privacy policy and disclaimer, shown at /privacy (and the older #privacy).
 // Keep every statement here true to what the code does; update the date when it changes.
 
-// Set this to a contact address before publishing; the contact section is hidden while empty.
-const CONTACT_EMAIL = ''
+import { useEffect, useState } from 'react'
+
+// Web3Forms access key (free, from web3forms.com). It is public by design: messages are forwarded to the
+// owner's inbox without the address ever appearing on the site. The contact section is hidden while empty.
+const WEB3FORMS_KEY = 'be463a9e-72d4-40c8-866a-d4b0cd18135e'
 const UPDATED = '20 October 2026'
 
-export default function Privacy({ back }) {
+const TOASTS = {
+  sent: '🪔 Message sent! Thank you 🙏',
+  error: '⚠️ Could not send right now. Please try again in a bit.',
+}
+
+function ContactForm() {
+  const [status, setStatus] = useState('idle')
+  const [toast, setToast] = useState(null)
+
+  useEffect(() => {
+    if (!toast) return
+    const id = setTimeout(() => setToast(null), 4000)
+    return () => clearTimeout(id)
+  }, [toast])
+
+  function finish(next) {
+    setStatus(next)
+    setToast({ kind: next, key: Date.now() })
+  }
+
+  async function submit(e) {
+    e.preventDefault()
+    const form = e.currentTarget
+    setStatus('sending')
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          ...Object.fromEntries(new FormData(form)),
+          access_key: WEB3FORMS_KEY,
+          subject: 'Digital Poojaveppu: new message',
+        }),
+      })
+      if (!(await res.json()).success) throw new Error()
+      form.reset()
+      finish('sent')
+    } catch {
+      finish('error')
+    }
+  }
+
+  const toastEl = toast && (
+    <div key={toast.key} className={`toast ${toast.kind}`} role="status" aria-live="polite">
+      {TOASTS[toast.kind]}
+    </div>
+  )
+
+  if (status === 'sent')
+    return (
+      <>
+        <div className="form-done">
+          <span className="recv">Received ✓</span>
+          <p>Thank you! Your message has been sent. We will read it soon. 🙏</p>
+          <button className="link" onClick={() => setStatus('idle')}>
+            Send another message
+          </button>
+        </div>
+        {toastEl}
+      </>
+    )
+
+  return (
+    <form className="contact" onSubmit={submit}>
+      <label>
+        Name <span>(optional)</span>
+        <input name="name" maxLength={80} autoComplete="name" />
+      </label>
+      <label>
+        Email <span>(optional, only if you want a reply)</span>
+        <input name="email" type="email" maxLength={120} autoComplete="email" />
+      </label>
+      <label>
+        Message
+        <textarea name="message" required minLength={5} maxLength={3000} rows={5} />
+      </label>
+      {/* honeypot: bots fill it, people never see it */}
+      <input type="checkbox" name="botcheck" className="trap" tabIndex={-1} autoComplete="off" />
+      <button className="primary" disabled={status === 'sending'}>
+        {status === 'sending' ? 'Sending…' : 'Send message'}
+      </button>
+      {status === 'error' && <p className="form-note">Could not send right now. Please try again in a bit.</p>}
+      {toastEl}
+    </form>
+  )
+}
+
+export default function Privacy({ back, onBack }) {
   return (
     <article className="card policy">
-      <a className="back" href="#">
+      <a className="back" href="/" onClick={onBack}>
         {back}
       </a>
-      <h2>Privacy Policy &amp; Disclaimer</h2>
+      <h2>Privacy Policy, Terms of Use &amp; Disclaimer</h2>
       <p className="updated">Last updated: {UPDATED}</p>
 
       <h3>In short</h3>
@@ -19,6 +109,11 @@ export default function Privacy({ back }) {
         <li>Your PDF is never uploaded. Everything happens inside your own browser.</li>
         <li>We have no accounts, no analytics, no ads, no cookies and no tracking.</li>
         <li>This is a fun, unofficial parody. It is not a real temple, trust or receipt.</li>
+        <li>
+          It is satire and humour only. No offence is intended to any religion, faith, deity, ritual, community or
+          person.
+        </li>
+        <li>By using this site you agree to the terms below.</li>
       </ul>
 
       <h3>1. Your PDF and your name</h3>
@@ -62,9 +157,18 @@ export default function Privacy({ back }) {
           .
         </li>
         <li>
-          <strong>WhatsApp sharing:</strong> only if you tap the share button, WhatsApp opens with a ready-made message
-          containing a short text and a link to this site. Your PDF is not shared. WhatsApp’s own privacy policy applies
-          there.
+          <strong>Sharing:</strong> only if you tap the share button. On devices that support it, your phone’s share
+          menu opens with your pooja PDF, a short text and a link to this site, and you choose the app and the person;
+          the file goes straight from your device to that app, never through us. Elsewhere, WhatsApp opens with only the
+          text and the link, and your PDF is not shared. The app you choose has its own privacy policy.
+        </li>
+        <li>
+          <strong>Contact form:</strong> only if you send a message, the name, email and message you type are passed
+          to Web3Forms, which forwards them to us by email. See{' '}
+          <a href="https://web3forms.com/privacy" target="_blank" rel="noreferrer">
+            Web3Forms’ Privacy Policy
+          </a>
+          .
         </li>
         <li>
           <strong>Hosting:</strong> like any website, our hosting provider may keep standard server logs (such as IP
@@ -106,7 +210,38 @@ export default function Privacy({ back }) {
         </li>
       </ul>
 
-      <h3>7. Credits</h3>
+      <h3>7. Terms of use</h3>
+      <ul>
+        <li>
+          <strong>Satire and parody.</strong> All content on this site, including the receipt, purposes, loading
+          messages and cover page, is humour and parody made in good faith. It is not meant to mock, insult or hurt the
+          religious feelings of anyone. Please use it only in that spirit.
+        </li>
+        <li>
+          <strong>Your files, your responsibility.</strong> Use only PDFs that you own or are allowed to use. You are
+          responsible for the files you choose and for how you use or share the resulting PDF. Do not use the site to
+          create anything unlawful, misleading or offensive, or to pass the cover off as a real receipt or document.
+        </li>
+        <li>
+          <strong>No liability.</strong> The site is free and provided “as is” and “as available”. To the fullest
+          extent permitted by law, the makers are not liable for any loss or damage arising from using it, including
+          lost or damaged files, missed studies, exam results or hurt feelings.
+        </li>
+        <li>
+          <strong>No affiliation.</strong> Names of films, places, fonts and other works mentioned belong to their
+          respective owners and are used only for reference or parody. No endorsement is implied.
+        </li>
+        <li>
+          <strong>Changes and removal.</strong> We may change, pause or remove the site, or any part of it, at any time.
+          If you have a concern about any content, contact us and we will review it in good faith and remove it where
+          appropriate.
+        </li>
+        <li>
+          <strong>Governing law.</strong> These terms are governed by the laws of India.
+        </li>
+      </ul>
+
+      <h3>8. Credits</h3>
       <p>
         Fonts: Nupuram and Manjari (Swathanthra Malayalam Computing), Anek Malayalam, Noto Sans Malayalam, Baloo Thambi
         2, Bungee, Archivo and Caveat, all under the SIL Open Font License. The Saraswathi Devi illustration is used
@@ -118,15 +253,18 @@ export default function Privacy({ back }) {
         please contact us and we will take it down.
       </p>
 
-      <h3>8. Changes</h3>
-      <p>If this policy changes, the new version will be posted on this page with a new date.</p>
+      <h3>9. Changes</h3>
+      <p>If this policy or these terms change, the new version will be posted on this page with a new date.</p>
 
-      {CONTACT_EMAIL && (
+      {WEB3FORMS_KEY && (
         <>
-          <h3>9. Contact</h3>
+          <h3 id="contact">10. Contact</h3>
           <p>
-            Questions or concerns? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            Questions, concerns, or a removal request? Send us a message below. Only what you type here is sent: it is
+            delivered through Web3Forms (a form-to-email service) and used only to read and reply to your message. Leave
+            the email empty if you do not need a reply.
           </p>
+          <ContactForm />
         </>
       )}
     </article>
