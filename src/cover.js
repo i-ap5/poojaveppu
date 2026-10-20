@@ -61,47 +61,65 @@ async function loadFonts(c) {
   await settleFonts(sample)
 }
 
-// iPhone Safari can report fonts as loaded while canvas still measures text with them as
-// zero width: centred lines then start at the middle and overflow. Wait (up to ~3s) until
-// every font the cover uses measures the sample text non-zero and the same twice in a row.
+// Text is measured with a hidden DOM element, not canvas measureText: on iPhone Safari the
+// canvas measured web-font text far too narrow, so centred lines started at the middle and
+// overflowed. The page's own layout is reliable there, so the cover borrows it.
+let probe
+let font = ''
+function measure(str) {
+  if (!probe) {
+    probe = document.createElement('span')
+    probe.setAttribute('aria-hidden', 'true')
+    probe.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;white-space:pre;letter-spacing:0'
+    document.body.append(probe)
+  }
+  probe.style.font = font
+  probe.textContent = str
+  return probe.getBoundingClientRect().width
+}
+
+// Wait (up to ~3s) until every cover font lays out the sample at a stable, non-zero width.
 async function settleFonts(sample) {
-  const ctx = document.createElement('canvas').getContext('2d')
   const fonts = [`600 40px ${PRINT}`, `800 40px ${PRINT}`, `800 40px ${TITLE}`, `700 40px ${HAND}`]
-  const measure = () =>
+  const widths = () =>
     fonts.map((f) => {
-      ctx.font = f
-      return ctx.measureText(sample).width
+      font = f
+      return measure(sample)
     })
-  let prev = measure()
+  let prev = widths()
   for (let i = 0; i < 30; i++) {
     await new Promise((r) => setTimeout(r, 100))
-    const now = measure()
+    const now = widths()
     if (now.every((w, j) => w > 0 && w === prev[j])) return
     prev = now
   }
 }
 
 function setFont(ctx, size, weight, family) {
-  ctx.font = `${weight} ${size}px ${family}`
+  font = `${weight} ${size}px ${family}`
+  ctx.font = font
 }
 
-function truncate(ctx, text, maxWidth) {
-  if (ctx.measureText(text).width <= maxWidth) return text
+function truncate(text, maxWidth) {
+  if (measure(text) <= maxWidth) return text
   const chars = [...text]
-  while (chars.length > 1 && ctx.measureText(chars.join('') + '…').width > maxWidth) chars.pop()
+  while (chars.length > 1 && measure(chars.join('') + '…') > maxWidth) chars.pop()
   return chars.join('') + '…'
 }
 
 // Draws text, shrinking it (down to 60%) and then truncating to fit maxWidth.
+// Alignment is done here (always drawn left-aligned) so it never depends on canvas metrics.
 function text(ctx, str, x, y, { size, weight = 400, family = PRINT, color = C.ink, align = 'left', maxWidth = 2000 }) {
   setFont(ctx, size, weight, family)
-  const w = ctx.measureText(str).width
+  const w = measure(str)
   if (w > maxWidth) setFont(ctx, Math.max(Math.floor(size * 0.6), Math.floor((size * maxWidth) / w)), weight, family)
-  ctx.textAlign = align
+  const line = truncate(str, maxWidth)
+  const lw = measure(line)
+  ctx.textAlign = 'left'
   ctx.textBaseline = 'alphabetic'
   ctx.fillStyle = color
-  ctx.fillText(truncate(ctx, str, maxWidth), x, y)
-  return ctx.measureText(str).width
+  ctx.fillText(line, align === 'center' ? x - lw / 2 : align === 'right' ? x - lw : x, y)
+  return measure(str)
 }
 
 function circle(ctx, x, y, r) {
